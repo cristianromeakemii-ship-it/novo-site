@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next"
 import { supabaseServer } from "@/lib/supabase-server"
+import { getDiscoveryNav } from "@/lib/queries"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://artefiosdeluz.com.br"
 
@@ -32,7 +33,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }))
 
-    return [...staticEntries, ...categoryEntries, ...productEntries]
+    // Atalhos por orixá/entidade (paginas filtradas indexaveis)
+    const nav = await getDiscoveryNav()
+    const subEntries: MetadataRoute.Sitemap = nav.flatMap(({ category, subs }) =>
+      subs.map((s) => ({
+        url: `${SITE_URL}/categoria/${category.slug}?sub=${s.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      }))
+    )
+
+    return [...staticEntries, ...categoryEntries, ...productEntries, ...subEntries]
   } catch {
     // Sem env do Supabase (ex.: build local) cai aqui e devolve so as paginas estaticas.
     return staticEntries

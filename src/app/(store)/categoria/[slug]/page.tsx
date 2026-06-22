@@ -11,29 +11,36 @@ type Props = {
   searchParams: Promise<{ sub?: string; sort?: string }>
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params
+  const { sub } = await searchParams
   const category = await getCategoryBySlug(slug)
   if (!category) return { title: "Categoria não encontrada" }
 
-  const desc = (
+  let title = category.name
+  let canonicalPath = `/categoria/${category.slug}`
+  let baseDesc =
     category.description ||
     `Veja nossa coleção de ${category.name} — peças artesanais com fé e proteção da Arte Fios de Luz.`
-  )
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 160)
+
+  // Com ?sub= (orixá/entidade), gera uma pagina indexavel distinta por subcategoria.
+  if (sub) {
+    const subs = await getSubcategories(category.id)
+    const activeSub = subs.find((s) => s.slug === sub)
+    if (activeSub) {
+      title = `${activeSub.name} — ${category.name}`
+      canonicalPath = `/categoria/${category.slug}?sub=${activeSub.slug}`
+      baseDesc = `${activeSub.name}: ${category.name} artesanais e personalizadas da Arte Fios de Luz. Fé, proteção e significado em cada peça.`
+    }
+  }
+
+  const desc = baseDesc.replace(/\s+/g, " ").trim().slice(0, 160)
 
   return {
-    title: category.name,
+    title,
     description: desc,
-    alternates: { canonical: `/categoria/${category.slug}` },
-    openGraph: {
-      title: category.name,
-      description: desc,
-      url: `/categoria/${category.slug}`,
-      type: "website",
-    },
+    alternates: { canonical: canonicalPath },
+    openGraph: { title, description: desc, url: canonicalPath, type: "website" },
   }
 }
 
@@ -57,8 +64,16 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="font-[var(--font-playfair)] text-3xl font-bold text-brown mb-2">{category.name}</h1>
-      {category.description && <p className="text-gray-600 mb-6">{category.description}</p>}
+      <h1 className="font-[var(--font-playfair)] text-3xl font-bold text-brown mb-2">
+        {activeSub ? activeSub.name : category.name}
+      </h1>
+      {activeSub ? (
+        <p className="text-gray-600 mb-6">
+          {activeSub.name} — {category.name}
+        </p>
+      ) : (
+        category.description && <p className="text-gray-600 mb-6">{category.description}</p>
+      )}
 
       {/* Subcategory pills (navegacao por URL) */}
       {subcategories.length > 0 && (

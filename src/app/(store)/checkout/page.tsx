@@ -42,6 +42,16 @@ export default function CheckoutPage() {
   const handleCepSearch = async () => {
     const cleanCep = zip.replace(/\D/g, "")
     if (cleanCep.length !== 8) return
+    // ViaCEP: autopreenche endereco/cidade/estado a partir do CEP
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
+      const cepData = await res.json()
+      if (!cepData.erro) {
+        if (cepData.logradouro) setAddress(cepData.logradouro)
+        if (cepData.localidade) setCity(cepData.localidade)
+        if (cepData.uf) setState(cepData.uf)
+      }
+    } catch {}
     const { data } = await supabase
       .from("shipping_zones")
       .select("*")
@@ -164,7 +174,7 @@ export default function CheckoutPage() {
                 <div>
                   <label className="text-sm text-gray-600 mb-1 block">CEP *</label>
                   <div className="flex gap-2">
-                    <Input value={zip} onChange={(e) => setZip(e.target.value)} placeholder="00000-000" required />
+                    <Input value={zip} onChange={(e) => setZip(e.target.value)} onBlur={handleCepSearch} placeholder="00000-000" maxLength={9} required />
                     <Button type="button" variant="outline" onClick={handleCepSearch}>Buscar</Button>
                   </div>
                 </div>
