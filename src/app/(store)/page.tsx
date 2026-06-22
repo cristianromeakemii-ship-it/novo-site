@@ -110,7 +110,7 @@ export default function HomePage() {
                   className="group relative h-64 rounded-xl overflow-hidden border border-primary/20"
                 >
                   {cat.image_url ? (
-                    <Image src={cat.image_url} alt={cat.name} fill className="object-cover" />
+                    <Image src={cat.image_url} alt={cat.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
                   ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-brown to-brown-dark" />
                   )}

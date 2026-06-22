@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Open_Sans } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { CartProvider } from "@/contexts/CartContext";
@@ -17,19 +18,45 @@ const openSans = Open_Sans({
   weight: ["300", "400", "500", "600", "700"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://artefiosdeluz.com.br";
+
 export const metadata: Metadata = {
-  title: "Arte Fios de Luz | Artigos Religiosos Artesanais",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Arte Fios de Luz | Artigos Religiosos Artesanais",
+    template: "%s | Arte Fios de Luz",
+  },
   description:
-    "Peças artesanais carregadas de significado, fé, proteção e conexão espiritual. Artigos religiosos personalizados para Umbanda, Candomblé e espiritualidade.",
+    "Peças artesanais carregadas de significado, fé, proteção e conexão espiritual. Guias, pulseiras, terços e artigos religiosos personalizados para Umbanda, Candomblé e espiritualidade.",
   keywords: [
     "artigos religiosos",
     "umbanda",
     "candomblé",
+    "guias de orixás",
+    "guias de entidades",
+    "pulseiras de orixás",
     "artesanal",
     "fios de luz",
     "proteção espiritual",
-    "guias religiosos",
   ],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    siteName: "Arte Fios de Luz",
+    url: SITE_URL,
+    title: "Arte Fios de Luz | Artigos Religiosos Artesanais",
+    description:
+      "Peças artesanais com fé, proteção e conexão espiritual. Guias, pulseiras, terços e artigos personalizados para Umbanda e Candomblé.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Arte Fios de Luz | Artigos Religiosos Artesanais",
+    description:
+      "Peças artesanais com fé, proteção e conexão espiritual para Umbanda e Candomblé.",
+  },
 };
 
 export default function RootLayout({
@@ -44,6 +71,7 @@ export default function RootLayout({
           <SettingsProvider>
             <CartProvider>
               {children}
+              <Toaster richColors position="top-center" />
             </CartProvider>
           </SettingsProvider>
         </AuthProvider>

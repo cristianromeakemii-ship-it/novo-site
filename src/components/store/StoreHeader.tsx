@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Search, User, ShoppingBag, Menu, X, Phone, ChevronDown } from "lucide-react"
 import BrandMark from "@/components/BrandMark"
 import { useCart } from "@/contexts/CartContext"
@@ -14,6 +15,7 @@ export default function StoreHeader() {
   const { itemCount } = useCart()
   const { user } = useAuth()
   const { settings } = useSettings()
+  const router = useRouter()
   const [categories, setCategories] = useState<(Category & { subcategories?: Subcategory[] })[]>([])
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -42,6 +44,15 @@ export default function StoreHeader() {
     load()
   }, [])
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    const term = searchQuery.trim()
+    if (!term) return
+    router.push(`/buscar?q=${encodeURIComponent(term)}`)
+    setSearchOpen(false)
+    setMobileOpen(false)
+  }
+
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
       {settings.announcement_enabled && settings.announcement_text && (
@@ -67,7 +78,7 @@ export default function StoreHeader() {
 
           {/* Desktop search */}
           <div className="hidden lg:flex flex-1 max-w-md mx-4">
-            <div className="relative w-full">
+            <form onSubmit={handleSearch} className="relative w-full">
               <input
                 type="text"
                 placeholder="Buscar produtos..."
@@ -75,8 +86,10 @@ export default function StoreHeader() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full h-9 pl-9 pr-3 rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            </div>
+              <button type="submit" aria-label="Buscar" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary">
+                <Search className="w-4 h-4" />
+              </button>
+            </form>
           </div>
 
           {/* Action icons */}
@@ -107,7 +120,7 @@ export default function StoreHeader() {
         {/* Mobile search */}
         {searchOpen && (
           <div className="lg:hidden px-4 pb-3">
-            <div className="relative">
+            <form onSubmit={handleSearch} className="relative">
               <input
                 type="text"
                 placeholder="Buscar produtos..."
@@ -115,8 +128,10 @@ export default function StoreHeader() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full h-9 pl-9 pr-3 rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            </div>
+              <button type="submit" aria-label="Buscar" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary">
+                <Search className="w-4 h-4" />
+              </button>
+            </form>
           </div>
         )}
       </div>

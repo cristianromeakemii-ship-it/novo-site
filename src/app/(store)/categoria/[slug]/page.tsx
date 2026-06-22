@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
+import Link from "next/link"
 import { supabase, type Product, type Category, type Subcategory } from "@/lib/supabase"
 import ProductCard from "@/components/store/ProductCard"
 import { cn } from "@/lib/utils"
@@ -129,7 +130,10 @@ export default function CategoryPage() {
           ))}
         </div>
       ) : products.length === 0 ? (
-        <p className="text-center text-gray-500 py-12">Nenhum produto encontrado nesta categoria.</p>
+        <div className="text-center py-16">
+          <p className="text-gray-600 mb-4">Nenhum produto encontrado nesta categoria.</p>
+          <Link href="/" className="text-primary hover:underline">Ver toda a loja</Link>
+        </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {products.map((product) => (

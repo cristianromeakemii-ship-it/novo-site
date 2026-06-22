@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import ProductCard from "@/components/store/ProductCard"
+import { toast } from "sonner"
 
 export default function ProductPage() {
   const params = useParams()
@@ -78,6 +79,7 @@ export default function ProductPage() {
       image_url: currentImage || "",
       type: product.type,
     }, quantity)
+    toast.success("Produto adicionado ao carrinho", { description: product.name })
   }
 
   const handleShipping = async () => {
@@ -170,7 +172,7 @@ export default function ProductPage() {
                     selectedImage === i ? "border-primary" : "border-transparent"
                   )}
                 >
-                  <Image src={img.url} alt="" fill className="object-cover" sizes="64px" />
+                  <Image src={img.url} alt={`${product.name} — foto ${i + 1}`} fill className="object-cover" sizes="64px" />
                 </button>
               ))}
             </div>
@@ -224,7 +226,11 @@ export default function ProductPage() {
                 <Minus className="w-4 h-4" />
               </button>
               <span className="px-4 text-sm font-medium">{quantity}</span>
-              <button onClick={() => setQuantity(quantity + 1)} className="p-2 hover:bg-gray-50">
+              <button
+                onClick={() => setQuantity((q) => Math.min(Math.max(stock, 1), q + 1))}
+                disabled={quantity >= stock}
+                className="p-2 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
                 <Plus className="w-4 h-4" />
               </button>
             </div>
