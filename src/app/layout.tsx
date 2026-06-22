@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Raleway } from "next/font/google";
+import { Playfair_Display, Open_Sans } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { SettingsProvider } from "@/contexts/SettingsContext";
+import { CartProvider } from "@/contexts/CartContext";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
-const raleway = Raleway({
-  variable: "--font-raleway",
+const openSans = Open_Sans({
+  variable: "--font-opensans",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 });
@@ -35,8 +38,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${cormorant.variable} ${raleway.variable} h-full`}>
-      <body className="min-h-full flex flex-col antialiased">{children}</body>
+    <html lang="pt-BR" className={`${playfair.variable} ${openSans.variable} h-full`}>
+      <body className="min-h-full flex flex-col antialiased">
+        <AuthProvider>
+          <SettingsProvider>
+            <CartProvider>
+              {children}
+            </CartProvider>
+          </SettingsProvider>
+        </AuthProvider>
+      </body>
     </html>
   );
 }
