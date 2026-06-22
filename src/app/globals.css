@@ -1,27 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #FFFFFF;
+  --background: #FBF8F1;
   --foreground: hsl(0 0% 20%);
-  --primary: hsl(28 80% 52%);
+  --primary: #B8860B;
   --primary-foreground: #FFFFFF;
   --secondary: hsl(38 35% 58%);
   --secondary-foreground: #FFFFFF;
   --accent: hsl(38 35% 58%);
   --accent-foreground: hsl(0 0% 20%);
-  --muted: hsl(0 0% 96%);
+  --muted: hsl(40 30% 96%);
   --muted-foreground: hsl(0 0% 45%);
   --destructive: hsl(0 84% 60%);
   --destructive-foreground: #FFFFFF;
-  --border: hsl(0 0% 90%);
-  --input: hsl(0 0% 90%);
-  --ring: hsl(28 80% 52%);
+  --border: hsl(38 20% 88%);
+  --input: hsl(38 20% 88%);
+  --ring: #B8860B;
   --radius: 0.5rem;
-  --sidebar-bg: hsl(215 40% 12%);
+  --sidebar-bg: #241B10;
   --sidebar-foreground: hsl(0 0% 95%);
   --gold: #B8860B;
   --gold-light: #D4A843;
   --gold-dark: #8B6914;
+  --brown: #3A2E1A;
+  --brown-dark: #241B10;
+  --cream: #F4EEE0;
 }
 
 @theme inline {
@@ -45,6 +48,9 @@
   --color-gold: var(--gold);
   --color-gold-light: var(--gold-light);
   --color-gold-dark: var(--gold-dark);
+  --color-brown: var(--brown);
+  --color-brown-dark: var(--brown-dark);
+  --color-cream: var(--cream);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

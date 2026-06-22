@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthContext"
 import { cn } from "@/lib/utils"
+import BrandMark from "@/components/BrandMark"
 import {
   LayoutDashboard,
   Package,
@@ -47,14 +48,17 @@ export default function AdminSidebar() {
   return (
     <aside
       className={cn(
-        "flex flex-col h-screen bg-[#1a1f36] text-white transition-all duration-300 sticky top-0",
+        "flex flex-col h-screen bg-brown-dark text-white transition-all duration-300 sticky top-0",
         collapsed ? "w-16" : "w-64"
       )}
     >
       <div className="flex items-center justify-between p-4 border-b border-white/10">
-        {!collapsed && (
-          <span className="text-lg font-bold truncate">Arte Fios de Luz</span>
-        )}
+        <div className="flex items-center gap-2 min-w-0">
+          <BrandMark className="w-7 h-7 shrink-0" />
+          {!collapsed && (
+            <span className="text-lg font-bold truncate">Arte Fios de Luz</span>
+          )}
+        </div>
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-1 rounded hover:bg-white/10"

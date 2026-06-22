@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Search, User, ShoppingBag, Menu, X, Phone, ChevronDown, Sparkles } from "lucide-react"
+import { Search, User, ShoppingBag, Menu, X, Phone, ChevronDown } from "lucide-react"
+import BrandMark from "@/components/BrandMark"
 import { useCart } from "@/contexts/CartContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { useSettings } from "@/contexts/SettingsContext"
@@ -58,7 +59,7 @@ export default function StoreHeader() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <Sparkles className="w-6 h-6 text-primary" />
+            <BrandMark className="w-7 h-7" />
             <span className="font-[var(--font-playfair)] text-xl font-bold text-[#3A2E1A]">
               Arte Fios de Luz
             </span>

@@ -52,7 +52,7 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative h-[70vh] min-h-[400px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#3A2E1A] to-[#1a2332]">
+      <section className="relative h-[70vh] min-h-[400px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-brown to-brown-dark">
         {settings.hero_image_url && (
           <Image
             src={settings.hero_image_url}
@@ -112,7 +112,7 @@ export default function HomePage() {
                   {cat.image_url ? (
                     <Image src={cat.image_url} alt={cat.name} fill className="object-cover" />
                   ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#3A2E1A] to-[#1a2332]" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-brown to-brown-dark" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-primary/30">
@@ -163,7 +163,7 @@ export default function HomePage() {
       )}
 
       {/* CTA banner */}
-      <section className="py-16 bg-gradient-to-r from-[#3A2E1A] to-[#1a2332]">
+      <section className="py-16 bg-gradient-to-r from-brown to-brown-dark">
         <div className="container mx-auto px-4 text-center">
           <Sparkles className="w-8 h-8 text-primary mx-auto mb-4" />
           <h2 className="font-[var(--font-playfair)] text-3xl font-bold text-white mb-4">

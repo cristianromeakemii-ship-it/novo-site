@@ -1,10 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { Sparkles, AtSign, Globe, MessageCircle } from "lucide-react"
+import { AtSign, Globe, MessageCircle } from "lucide-react"
 import { useSettings } from "@/contexts/SettingsContext"
 import { useEffect, useState } from "react"
 import { supabase, type Category } from "@/lib/supabase"
+import BrandMark from "@/components/BrandMark"
 
 export default function StoreFooter() {
   const { settings } = useSettings()
@@ -22,13 +23,13 @@ export default function StoreFooter() {
   const whatsappLink = `https://wa.me/${settings.whatsapp_number || settings.whatsapp}`
 
   return (
-    <footer className="bg-[#1a2332] text-gray-300 mt-auto">
+    <footer className="bg-brown-dark text-gray-300 mt-auto">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Col 1: Logo & description */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-primary" />
+              <BrandMark className="w-6 h-6" />
               <span className="font-[var(--font-playfair)] text-lg font-bold text-white">Arte Fios de Luz</span>
             </div>
             <p className="text-sm leading-relaxed mb-4">{settings.store_description}</p>

@@ -1,9 +1,11 @@
-import { createClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder'
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// createBrowserClient (@supabase/ssr) guarda a sessao em COOKIES, permitindo que
+// o proxy.ts valide o login no servidor para proteger a area /admin.
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
 
 export type Product = {
   id: string
