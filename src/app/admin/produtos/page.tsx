@@ -5,6 +5,14 @@ import { supabase } from "@/lib/supabase"
 import { formatPrice, cn } from "@/lib/utils"
 import type { Product, Category, Subcategory, StockItem } from "@/lib/supabase"
 import { Plus, Pencil, Trash2, Search, X } from "lucide-react"
+import MediaUploader from "@/components/admin/MediaUploader"
+
+type MediaItem = {
+  id?: string
+  url: string
+  sort_order: number
+  media_type: "image" | "video"
+}
 
 type ProductWithRelations = Product & {
   categories: Category | null
@@ -59,10 +67,11 @@ export default function ProdutosPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([])
 
   const load = useCallback(async () => {
     const [p, c, sc] = await Promise.all([
-      supabase.from("products").select("*, categories(*), stock_items(*)").order("created_at", { ascending: false }),
+      supabase.from("products").select("*, categories(*), stock_items(*), product_images(*)").order("created_at", { ascending: false }),
       supabase.from("categories").select("*").order("name"),
       supabase.from("subcategories").select("*").order("name"),
     ])
@@ -83,10 +92,11 @@ export default function ProdutosPage() {
   const openNew = () => {
     setEditingId(null)
     setForm(emptyForm)
+    setMediaItems([])
     setDialogOpen(true)
   }
 
-  const openEdit = (p: ProductWithRelations) => {
+  const openEdit = async (p: ProductWithRelations) => {
     setEditingId(p.id)
     const stock = p.stock_items?.[0]
     setForm({
@@ -101,10 +111,23 @@ export default function ProdutosPage() {
       subcategory_id: p.subcategory_id || "",
       is_featured: p.is_featured,
       guide_size: p.guide_size || "",
-      image_url: p.product_images?.[0]?.url || "",
+      image_url: "",
       stock_quantity: stock?.quantity || 0,
       stock_min_quantity: stock?.min_quantity || 1,
     })
+    const { data: imgs } = await supabase
+      .from("product_images")
+      .select("*")
+      .eq("product_id", p.id)
+      .order("sort_order")
+    setMediaItems(
+      (imgs || []).map((img: any) => ({
+        id: img.id,
+        url: img.url,
+        sort_order: img.sort_order,
+        media_type: (img.media_type || "image") as "image" | "video",
+      }))
+    )
     setDialogOpen(true)
   }
 
@@ -139,11 +162,16 @@ export default function ProdutosPage() {
         { onConflict: "product_id" }
       )
 
-      if (form.image_url) {
-        if (editingId) {
-          await supabase.from("product_images").delete().eq("product_id", productId)
-        }
-        await supabase.from("product_images").insert({ product_id: productId, url: form.image_url, sort_order: 0 })
+      await supabase.from("product_images").delete().eq("product_id", productId)
+      if (mediaItems.length > 0) {
+        await supabase.from("product_images").insert(
+          mediaItems.map((m, i) => ({
+            product_id: productId,
+            url: m.url,
+            sort_order: i,
+            media_type: m.media_type,
+          }))
+        )
       }
     }
 
@@ -313,9 +341,12 @@ export default function ProdutosPage() {
                   {filteredSubcats.map((sc) => <option key={sc.id} value={sc.id}>{sc.name}</option>)}
                 </select>
               </div>
-              <div className="col-span-2 space-y-1">
-                <label className="text-sm font-medium">URL da Imagem</label>
-                <input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="w-full px-3 py-2 border rounded-md bg-background text-sm" placeholder="https://..." />
+              <div className="col-span-2">
+                <MediaUploader
+                  productId={editingId || undefined}
+                  media={mediaItems}
+                  onChange={setMediaItems}
+                />
               </div>
               <div className="col-span-2 flex items-center gap-2">
                 <input type="checkbox" id="featured" checked={form.is_featured} onChange={(e) => setForm({ ...form, is_featured: e.target.checked })} className="rounded" />
