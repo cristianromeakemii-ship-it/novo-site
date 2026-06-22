@@ -70,6 +70,11 @@ export default function CheckoutPage() {
     setSubmitting(true)
     setError("")
 
+    const customizationNotes = items
+      .filter((i) => i.customization)
+      .map((i) => `• ${i.name} (x${i.quantity}): ${i.customization}`)
+      .join("\n")
+
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .insert({
@@ -88,7 +93,7 @@ export default function CheckoutPage() {
         total: finalTotal,
         tracking_code: "",
         tracking_url: "",
-        notes: "",
+        notes: customizationNotes ? `Personalização:\n${customizationNotes}` : "",
       })
       .select()
       .single()
@@ -102,7 +107,7 @@ export default function CheckoutPage() {
     const orderItems = items.map((item) => ({
       order_id: order.id,
       product_id: item.id,
-      product_name: item.name,
+      product_name: item.customization ? `${item.name} — Personalização: ${item.customization}` : item.name,
       quantity: item.quantity,
       price_at_sale: item.price,
       cost_at_sale: 0,
@@ -254,9 +259,14 @@ export default function CheckoutPage() {
             <h2 className="font-semibold text-lg mb-4">Resumo do Pedido</h2>
             <div className="space-y-3 mb-4">
               {items.map((item) => (
-                <div key={item.id} className="flex justify-between text-sm">
-                  <span className="text-gray-600 truncate mr-2">{item.name} x{item.quantity}</span>
-                  <span>{formatPrice(item.price * item.quantity)}</span>
+                <div key={item.key} className="text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 truncate mr-2">{item.name} x{item.quantity}</span>
+                    <span className="whitespace-nowrap">{formatPrice(item.price * item.quantity)}</span>
+                  </div>
+                  {item.customization && (
+                    <p className="text-xs text-gray-400 truncate">↳ {item.customization}</p>
+                  )}
                 </div>
               ))}
             </div>

@@ -1,7 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Sparkles, Hand, Truck, CreditCard, RotateCcw, Star, ArrowRight } from "lucide-react"
-import { getHomeData, getStoreSettings } from "@/lib/queries"
+import { getHomeData, getStoreSettings, getDiscoveryNav } from "@/lib/queries"
 import ProductCard from "@/components/store/ProductCard"
 import { Button } from "@/components/ui/button"
 
@@ -15,9 +15,10 @@ const testimonials = [
 ]
 
 export default async function HomePage() {
-  const [{ newProducts, featuredProducts, topCategories }, settings] = await Promise.all([
+  const [{ newProducts, featuredProducts, topCategories }, settings, discovery] = await Promise.all([
     getHomeData(),
     getStoreSettings(),
+    getDiscoveryNav(),
   ])
 
   const whatsapp = settings?.whatsapp_number || settings?.whatsapp || "5535989899904"
@@ -69,6 +70,34 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Navegue por Orixá / Entidade */}
+      {discovery.some((d) => d.subs.length > 0) && (
+        <section className="py-12">
+          <div className="container mx-auto px-4 space-y-8">
+            {discovery.map(({ category, subs }) =>
+              subs.length > 0 ? (
+                <div key={category.id}>
+                  <h2 className="font-[var(--font-playfair)] text-2xl font-bold text-brown mb-4 text-center">
+                    {category.name}
+                  </h2>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {subs.map((s) => (
+                      <Link
+                        key={s.slug}
+                        href={`/categoria/${category.slug}?sub=${s.slug}`}
+                        className="px-4 py-1.5 rounded-full text-sm border border-primary/30 text-brown hover:bg-primary hover:text-white hover:border-primary transition-colors"
+                      >
+                        {s.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ) : null
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Featured categories */}
       {topCategories.length > 0 && (

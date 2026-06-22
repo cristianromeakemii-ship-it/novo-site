@@ -10,6 +10,7 @@ import { formatPrice, cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 
 // Parte interativa da pagina de produto (galeria, quantidade, carrinho, frete).
@@ -22,6 +23,7 @@ export default function ProductDetails({ product }: { product: Product }) {
   const [cep, setCep] = useState("")
   const [shipping, setShipping] = useState<ShippingZone | null>(null)
   const [shippingError, setShippingError] = useState("")
+  const [customization, setCustomization] = useState("")
 
   const images = product.product_images || []
   const currentImage = images[selectedImage]?.url
@@ -37,10 +39,13 @@ export default function ProductDetails({ product }: { product: Product }) {
         price: product.price,
         image_url: currentImage || "",
         type: product.type,
+        customization: customization.trim() || undefined,
       },
       quantity
     )
-    toast.success("Produto adicionado ao carrinho", { description: product.name })
+    toast.success("Produto adicionado ao carrinho", {
+      description: customization.trim() ? `${product.name} (personalizado)` : product.name,
+    })
   }
 
   const handleShipping = async () => {
@@ -156,6 +161,20 @@ export default function ProductDetails({ product }: { product: Product }) {
               <Plus className="w-4 h-4" />
             </button>
           </div>
+        </div>
+
+        {/* Personalizacao sob encomenda (campo livre) */}
+        <div className="mb-4">
+          <label className="text-sm font-medium text-brown mb-1.5 block">Personalização (opcional)</label>
+          <Textarea
+            value={customization}
+            onChange={(e) => setCustomization(e.target.value)}
+            placeholder="Quer algo sob medida? Conte aqui: cores, tamanho, orixá/entidade, nº de contas/fios, pingente…"
+            rows={3}
+          />
+          <p className="text-xs text-gray-400 mt-1">
+            Peças sob encomenda podem ter prazo de produção maior — confirmamos os detalhes pelo WhatsApp.
+          </p>
         </div>
 
         <Button onClick={handleAddToCart} disabled={stock <= 0} className="w-full mb-3 bg-primary hover:bg-primary/90 text-white">

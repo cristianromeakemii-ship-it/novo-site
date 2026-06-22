@@ -91,3 +91,30 @@ export const getHomeData = cache(async () => {
     topCategories: (cats.data as Category[]) ?? [],
   }
 })
+
+// Atalhos por Orixa/Entidade para a home (descoberta + links internos de SEO).
+export const getDiscoveryNav = cache(
+  async (): Promise<
+    { category: { id: string; name: string; slug: string }; subs: { name: string; slug: string }[] }[]
+  > => {
+    const { data: cats } = await supabaseServer
+      .from("categories")
+      .select("id, name, slug")
+      .in("slug", ["guias-de-orixas", "guias-de-entidades"])
+      .eq("is_active", true)
+    if (!cats || cats.length === 0) return []
+    const catIds = (cats as { id: string }[]).map((c) => c.id)
+    const { data: subs } = await supabaseServer
+      .from("subcategories")
+      .select("category_id, name, slug")
+      .in("category_id", catIds)
+      .eq("is_active", true)
+      .order("name")
+    return (cats as { id: string; name: string; slug: string }[]).map((c) => ({
+      category: c,
+      subs: ((subs as { category_id: string; name: string; slug: string }[]) || []).filter(
+        (s) => s.category_id === c.id
+      ),
+    }))
+  }
+)

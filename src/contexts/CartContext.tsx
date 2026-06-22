@@ -3,26 +3,37 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
 
 export type CartItem = {
-  id: string
+  id: string // id do produto (vai para order_items.product_id)
+  key: string // chave da linha do carrinho (id + personalizacao)
   name: string
   slug: string
   price: number
   quantity: number
   image_url: string
   type: 'DIGITAL' | 'FISICO'
+  customization?: string
 }
+
+type CartInput = Omit<CartItem, 'quantity' | 'key'>
 
 type CartContextType = {
   items: CartItem[]
-  addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void
-  removeItem: (id: string) => void
-  updateQuantity: (id: string, quantity: number) => void
+  addItem: (item: CartInput, quantity?: number) => void
+  removeItem: (key: string) => void
+  updateQuantity: (key: string, quantity: number) => void
   clearCart: () => void
   total: number
   itemCount: number
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
+
+// Linhas com a MESMA personalizacao se agrupam; personalizacoes diferentes do
+// mesmo produto viram linhas separadas.
+function lineKey(id: string, customization?: string) {
+  const c = customization?.trim()
+  return c ? `${id}::${c}` : id
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
@@ -31,7 +42,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const stored = localStorage.getItem("cart")
     if (stored) {
-      try { setItems(JSON.parse(stored)) } catch {}
+      try {
+        const parsed = JSON.parse(stored) as CartItem[]
+        // garante a chave de linha em carrinhos salvos antes da personalizacao
+        setItems(parsed.map((i) => ({ ...i, key: i.key || lineKey(i.id, i.customization) })))
+      } catch {}
     }
     setLoaded(true)
   }, [])
@@ -42,25 +57,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items, loaded])
 
-  const addItem = useCallback((item: Omit<CartItem, 'quantity'>, quantity = 1) => {
-    setItems(prev => {
-      const existing = prev.find(i => i.id === item.id)
+  const addItem = useCallback((item: CartInput, quantity = 1) => {
+    const key = lineKey(item.id, item.customization)
+    setItems((prev) => {
+      const existing = prev.find((i) => i.key === key)
       if (existing) {
-        return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i)
+        return prev.map((i) => (i.key === key ? { ...i, quantity: i.quantity + quantity } : i))
       }
-      return [...prev, { ...item, quantity }]
+      return [...prev, { ...item, key, quantity }]
     })
   }, [])
 
-  const removeItem = useCallback((id: string) => {
-    setItems(prev => prev.filter(i => i.id !== id))
+  const removeItem = useCallback((key: string) => {
+    setItems((prev) => prev.filter((i) => i.key !== key))
   }, [])
 
-  const updateQuantity = useCallback((id: string, quantity: number) => {
+  const updateQuantity = useCallback((key: string, quantity: number) => {
     if (quantity <= 0) {
-      setItems(prev => prev.filter(i => i.id !== id))
+      setItems((prev) => prev.filter((i) => i.key !== key))
     } else {
-      setItems(prev => prev.map(i => i.id === id ? { ...i, quantity } : i))
+      setItems((prev) => prev.map((i) => (i.key === key ? { ...i, quantity } : i)))
     }
   }, [])
 
