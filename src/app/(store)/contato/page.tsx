@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { MessageCircle, Phone, Mail, Clock, Instagram, Facebook } from "lucide-react"
+import { MessageCircle, Phone, Mail, Clock, AtSign, Globe } from "lucide-react"
 import { useSettings } from "@/contexts/SettingsContext"
 import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
@@ -68,12 +68,12 @@ export default function ContactPage() {
       <div className="flex justify-center gap-4 mb-12">
         {settings.instagram_url && (
           <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary">
-            <Instagram className="w-5 h-5" /> Instagram
+            <AtSign className="w-5 h-5" /> Instagram
           </a>
         )}
         {settings.facebook_url && (
           <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary">
-            <Facebook className="w-5 h-5" /> Facebook
+            <Globe className="w-5 h-5" /> Facebook
           </a>
         )}
       </div>

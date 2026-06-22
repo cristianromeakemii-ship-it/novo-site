@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Sparkles, Instagram, Facebook, MessageCircle } from "lucide-react"
+import { Sparkles, AtSign, Globe, MessageCircle } from "lucide-react"
 import { useSettings } from "@/contexts/SettingsContext"
 import { useEffect, useState } from "react"
 import { supabase, type Category } from "@/lib/supabase"
@@ -34,10 +34,10 @@ export default function StoreFooter() {
             <p className="text-sm leading-relaxed mb-4">{settings.store_description}</p>
             <div className="flex gap-3">
               {settings.instagram_url && (
-                <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" className="hover:text-primary"><Instagram className="w-5 h-5" /></a>
+                <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" className="hover:text-primary"><AtSign className="w-5 h-5" /></a>
               )}
               {settings.facebook_url && (
-                <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="hover:text-primary"><Facebook className="w-5 h-5" /></a>
+                <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="hover:text-primary"><Globe className="w-5 h-5" /></a>
               )}
               <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="hover:text-primary"><MessageCircle className="w-5 h-5" /></a>
             </div>

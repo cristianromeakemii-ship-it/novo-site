@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react"
 import { supabase } from "@/lib/supabase"
 import type { StoreSettings, ShippingZone } from "@/lib/supabase"
 import { Save, Plus, Trash2 } from "lucide-react"
+import { formatPrice } from "@/lib/utils"
 
 const TABS = [
   { key: "aparencia", label: "Aparência" },
