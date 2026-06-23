@@ -66,6 +66,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { ...item, key, quantity }]
     })
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("cart:open"))
+    }
   }, [])
 
   const removeItem = useCallback((key: string) => {

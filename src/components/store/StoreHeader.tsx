@@ -87,7 +87,10 @@ export default function StoreHeader({
               <User className="w-5 h-5" />
               <span className="hidden md:inline">Minha conta</span>
             </Link>
-            <Link href="/carrinho" className="relative flex items-center gap-1 text-sm text-gray-600 hover:text-primary">
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("cart:open"))}
+              className="relative flex items-center gap-1 text-sm text-gray-600 hover:text-primary"
+            >
               <ShoppingBag className="w-5 h-5" />
               <span className="hidden md:inline">Meu carrinho</span>
               {itemCount > 0 && (
@@ -95,7 +98,7 @@ export default function StoreHeader({
                   {itemCount}
                 </span>
               )}
-            </Link>
+            </button>
           </div>
         </div>
 
