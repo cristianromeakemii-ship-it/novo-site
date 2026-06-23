@@ -61,7 +61,7 @@ export default function MyOrdersPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="font-[var(--font-playfair)] text-3xl font-bold text-[#3A2E1A] mb-8">
+      <h1 className="font-[var(--font-playfair)] text-3xl font-bold text-brown mb-8">
         Meus Pedidos
       </h1>
 

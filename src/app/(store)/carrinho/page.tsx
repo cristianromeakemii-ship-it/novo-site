@@ -14,7 +14,7 @@ export default function CartPage() {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h1 className="font-[var(--font-playfair)] text-2xl font-bold text-[#3A2E1A] mb-2">
+        <h1 className="font-[var(--font-playfair)] text-2xl font-bold text-brown mb-2">
           Seu carrinho está vazio
         </h1>
         <p className="text-gray-500 mb-6">Que tal explorar nossos produtos?</p>
@@ -27,7 +27,7 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="font-[var(--font-playfair)] text-3xl font-bold text-[#3A2E1A] mb-8">
+      <h1 className="font-[var(--font-playfair)] text-3xl font-bold text-brown mb-8">
         Meu Carrinho
       </h1>
 

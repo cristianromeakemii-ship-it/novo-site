@@ -9,7 +9,7 @@ export default function AboutPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <h1 className="font-[var(--font-playfair)] text-3xl font-bold text-[#3A2E1A] mb-8 text-center">
+      <h1 className="font-[var(--font-playfair)] text-3xl font-bold text-brown mb-8 text-center">
         Quem Somos
       </h1>
 
@@ -32,7 +32,7 @@ export default function AboutPage() {
           ) : (
             <>
               <p>
-                A <strong className="text-[#3A2E1A]">Arte Fios de Luz</strong> nasceu do amor pela espiritualidade e pela arte.
+                A <strong className="text-brown">Arte Fios de Luz</strong> nasceu do amor pela espiritualidade e pela arte.
                 Cada peça é criada à mão com dedicação, carregando consigo significado, fé, proteção e conexão espiritual.
               </p>
               <p>

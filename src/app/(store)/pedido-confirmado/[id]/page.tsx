@@ -12,15 +12,30 @@ export default function OrderConfirmationPage() {
   const params = useParams()
   const id = params.id as string
   const [order, setOrder] = useState<Order | null>(null)
+  const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
+    // 1) Resumo salvo no checkout — funciona para convidados (RLS impede ler o pedido)
+    try {
+      const cached = sessionStorage.getItem(`order:${id}`)
+      if (cached) {
+        const c = JSON.parse(cached)
+        setOrder({ id, total: c.total, payment_method: c.payment_method } as unknown as Order)
+        setLoading(false)
+        return
+      }
+    } catch {}
+    // 2) Fallback: busca no banco (usuario logado, dono do pedido)
     supabase
       .from("orders")
       .select("*, order_items(*)")
       .eq("id", id)
       .single()
-      .then(({ data }) => { if (data) setOrder(data) })
+      .then(({ data }) => {
+        if (data) setOrder(data as Order)
+        setLoading(false)
+      })
   }, [id])
 
   const handleCopy = () => {
@@ -29,10 +44,26 @@ export default function OrderConfirmationPage() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  if (!order) {
+  if (loading) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <p className="text-gray-500">Carregando pedido...</p>
+      </div>
+    )
+  }
+
+  if (!order) {
+    return (
+      <div className="container mx-auto px-4 py-16 max-w-lg text-center">
+        <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+        <h1 className="font-[var(--font-playfair)] text-2xl font-bold text-brown mb-2">Pedido registrado!</h1>
+        <p className="text-gray-600 mb-6">
+          Seu pedido <span className="font-mono font-bold">#{id.slice(0, 8).toUpperCase()}</span> foi recebido.
+          Você receberá a confirmação e os dados de pagamento por e-mail.
+        </p>
+        <Link href="/">
+          <Button className="bg-primary hover:bg-primary/90 text-white">Voltar à Loja</Button>
+        </Link>
       </div>
     )
   }
@@ -45,7 +76,7 @@ export default function OrderConfirmationPage() {
   return (
     <div className="container mx-auto px-4 py-16 max-w-lg text-center">
       <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-      <h1 className="font-[var(--font-playfair)] text-3xl font-bold text-[#3A2E1A] mb-2">
+      <h1 className="font-[var(--font-playfair)] text-3xl font-bold text-brown mb-2">
         Pedido Confirmado!
       </h1>
       <p className="text-gray-600 mb-6">Obrigado pela sua compra.</p>

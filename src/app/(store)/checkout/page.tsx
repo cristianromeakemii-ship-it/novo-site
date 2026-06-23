@@ -129,6 +129,15 @@ export default function CheckoutPage() {
 
     await supabase.from("order_items").insert(orderItems)
 
+    // Resumo para a pagina de confirmacao — funciona para convidados,
+    // que nao podem ler o proprio pedido por RLS.
+    try {
+      sessionStorage.setItem(
+        `order:${order.id}`,
+        JSON.stringify({ total: finalTotal, payment_method: paymentMethod })
+      )
+    } catch {}
+
     clearCart()
     router.push(`/pedido-confirmado/${order.id}`)
   }
@@ -143,7 +152,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="font-[var(--font-playfair)] text-3xl font-bold text-[#3A2E1A] mb-8">
+      <h1 className="font-[var(--font-playfair)] text-3xl font-bold text-brown mb-8">
         Finalizar Compra
       </h1>
 

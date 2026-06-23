@@ -53,7 +53,7 @@ export default function StoreHeader({
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
             <BrandMark className="w-7 h-7" />
-            <span className="font-[var(--font-playfair)] text-xl font-bold text-[#3A2E1A]">
+            <span className="font-[var(--font-playfair)] text-xl font-bold text-brown">
               Arte Fios de Luz
             </span>
           </Link>
