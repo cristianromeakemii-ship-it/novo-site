@@ -89,6 +89,29 @@ export default function CheckoutPage() {
       .map((i) => `• ${i.name} (x${i.quantity}): ${i.customization}`)
       .join("\n")
 
+    // Revalida estoque dos itens fisicos antes de criar o pedido (evita overselling)
+    const neededByProduct = new Map<string, number>()
+    for (const it of items) {
+      if (it.type !== "FISICO") continue
+      neededByProduct.set(it.id, (neededByProduct.get(it.id) || 0) + it.quantity)
+    }
+    if (neededByProduct.size > 0) {
+      const { data: stockRows } = await supabase
+        .from("stock_items")
+        .select("product_id, quantity")
+        .in("product_id", Array.from(neededByProduct.keys()))
+      if (stockRows) {
+        const stockMap = new Map(stockRows.map((s) => [s.product_id, s.quantity]))
+        for (const [pid, needed] of neededByProduct) {
+          if ((stockMap.get(pid) ?? 0) < needed) {
+            setError("Um item do carrinho ficou sem estoque suficiente. Ajuste as quantidades e tente novamente.")
+            setSubmitting(false)
+            return
+          }
+        }
+      }
+    }
+
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .insert({

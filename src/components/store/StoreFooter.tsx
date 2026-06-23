@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { AtSign, Globe, MessageCircle } from "lucide-react"
+import { AtSign, Globe, MessageCircle, Lock } from "lucide-react"
 import { useSettings } from "@/contexts/SettingsContext"
 import type { Category } from "@/lib/supabase"
 import BrandMark from "@/components/BrandMark"
@@ -78,10 +78,11 @@ export default function StoreFooter({ categories }: { categories: Category[] }) 
       <div className="border-t border-gray-700">
         <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
           <p>&copy; {new Date().getFullYear()} Arte Fios de Luz. Todos os direitos reservados.</p>
-          <div className="flex items-center gap-4">
-            <span>PIX</span>
-            <span>Boleto</span>
-            <span className="flex items-center gap-1">🔒 Compra Segura</span>
+          <div className="flex flex-wrap items-center gap-2 text-[11px]">
+            <span className="bg-white/10 rounded px-2 py-0.5">PIX</span>
+            <span className="bg-white/10 rounded px-2 py-0.5">Cartão</span>
+            <span className="bg-white/10 rounded px-2 py-0.5">Boleto</span>
+            <span className="flex items-center gap-1 ml-1"><Lock className="w-3 h-3" /> Compra Segura</span>
           </div>
         </div>
       </div>
