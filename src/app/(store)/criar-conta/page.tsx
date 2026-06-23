@@ -38,21 +38,21 @@ export default function RegisterPage() {
     <div className="container mx-auto px-4 py-16 max-w-sm">
       <div className="text-center mb-8">
         <Sparkles className="w-8 h-8 text-primary mx-auto mb-3" />
-        <h1 className="font-[var(--font-playfair)] text-2xl font-bold text-[#3A2E1A]">Criar Conta</h1>
+        <h1 className="font-[var(--font-playfair)] text-2xl font-bold text-brown">Criar Conta</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="text-sm text-gray-600 mb-1 block">Nome</label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} />
+          <label htmlFor="signup-nome" className="text-sm text-gray-600 mb-1 block">Nome</label>
+          <Input id="signup-nome" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div>
-          <label className="text-sm text-gray-600 mb-1 block">E-mail</label>
-          <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <label htmlFor="signup-email" className="text-sm text-gray-600 mb-1 block">E-mail</label>
+          <Input id="signup-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
         <div>
-          <label className="text-sm text-gray-600 mb-1 block">Senha</label>
-          <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <label htmlFor="signup-senha" className="text-sm text-gray-600 mb-1 block">Senha</label>
+          <Input id="signup-senha" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
         {error && <p className="text-sm text-red-500">{error}</p>}
         <Button type="submit" disabled={loading} className="w-full bg-primary hover:bg-primary/90 text-white">
