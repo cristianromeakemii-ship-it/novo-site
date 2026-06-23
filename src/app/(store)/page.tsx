@@ -95,7 +95,7 @@ export default async function HomePage() {
                       {subs.map((s) => (
                         <Link
                           key={s.slug}
-                          href={`/categoria/${category.slug}?sub=${s.slug}`}
+                          href={`/categoria/${category.slug}/${s.slug}`}
                           className="px-3.5 py-1.5 rounded-full text-sm border border-primary/30 text-brown hover:bg-primary hover:text-white hover:border-primary transition-colors"
                         >
                           {s.name}

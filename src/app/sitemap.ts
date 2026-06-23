@@ -37,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const nav = await getDiscoveryNav()
     const subEntries: MetadataRoute.Sitemap = nav.flatMap(({ category, subs }) =>
       subs.map((s) => ({
-        url: `${SITE_URL}/categoria/${category.slug}?sub=${s.slug}`,
+        url: `${SITE_URL}/categoria/${category.slug}/${s.slug}`,
         lastModified: new Date(),
         changeFrequency: "weekly" as const,
         priority: 0.6,

@@ -152,7 +152,7 @@ export default function StoreHeader({
                     {cat.subcategories.map((sub) => (
                       <Link
                         key={sub.id}
-                        href={`/categoria/${cat.slug}?sub=${sub.slug}`}
+                        href={`/categoria/${cat.slug}/${sub.slug}`}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary"
                       >
                         {sub.name}
@@ -191,7 +191,7 @@ export default function StoreHeader({
                     {cat.subcategories.map((sub) => (
                       <Link
                         key={sub.id}
-                        href={`/categoria/${cat.slug}?sub=${sub.slug}`}
+                        href={`/categoria/${cat.slug}/${sub.slug}`}
                         className="block py-1.5 text-sm text-gray-600"
                         onClick={() => setMobileOpen(false)}
                       >
