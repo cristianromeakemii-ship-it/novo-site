@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { ShoppingBag, MessageCircle, Minus, Plus, Truck } from "lucide-react"
+import { ShoppingBag, MessageCircle, Minus, Plus, Truck, ZoomIn, X, ChevronLeft, ChevronRight } from "lucide-react"
 import { supabase, type Product, type ShippingZone } from "@/lib/supabase"
 import { useCart } from "@/contexts/CartContext"
 import { useSettings } from "@/contexts/SettingsContext"
@@ -24,6 +24,7 @@ export default function ProductDetails({ product }: { product: Product }) {
   const [shipping, setShipping] = useState<ShippingZone | null>(null)
   const [shippingError, setShippingError] = useState("")
   const [customization, setCustomization] = useState("")
+  const [lightboxOpen, setLightboxOpen] = useState(false)
 
   const images = product.product_images || []
   const currentImage = images[selectedImage]?.url
@@ -73,23 +74,33 @@ export default function ProductDetails({ product }: { product: Product }) {
   )}`
 
   return (
+    <>
     <div className="grid md:grid-cols-2 gap-8">
       {/* Images */}
       <div>
-        <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 mb-3">
+        <button
+          type="button"
+          onClick={() => currentImage && setLightboxOpen(true)}
+          className="relative aspect-square w-full rounded-lg overflow-hidden bg-gray-100 mb-3 group/zoom cursor-zoom-in"
+        >
           {currentImage ? (
-            <Image
-              src={currentImage}
-              alt={product.name}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
-            />
+            <>
+              <Image
+                src={currentImage}
+                alt={product.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+              />
+              <span className="absolute bottom-2 right-2 bg-black/50 text-white rounded-full p-1.5 opacity-0 group-hover/zoom:opacity-100 transition-opacity">
+                <ZoomIn className="w-4 h-4" />
+              </span>
+            </>
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-amber-50 to-amber-100" />
           )}
-        </div>
+        </button>
         {images.length > 1 && (
           <div className="flex gap-2 overflow-x-auto">
             {images.map((img, i) => (
@@ -215,5 +226,61 @@ export default function ProductDetails({ product }: { product: Product }) {
         </div>
       </div>
     </div>
+
+      {/* Lightbox / zoom da imagem */}
+      {lightboxOpen && currentImage && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            className="absolute top-4 right-4 text-white/80 hover:text-white"
+            onClick={() => setLightboxOpen(false)}
+            aria-label="Fechar"
+          >
+            <X className="w-7 h-7" />
+          </button>
+          {images.length > 1 && (
+            <button
+              className="absolute left-4 text-white/80 hover:text-white"
+              onClick={(e) => {
+                e.stopPropagation()
+                setSelectedImage((i) => (i - 1 + images.length) % images.length)
+              }}
+              aria-label="Imagem anterior"
+            >
+              <ChevronLeft className="w-9 h-9" />
+            </button>
+          )}
+          <div className="relative w-[90vw] h-[85vh]" onClick={(e) => e.stopPropagation()}>
+            <Image src={currentImage} alt={product.name} fill className="object-contain" sizes="90vw" />
+          </div>
+          {images.length > 1 && (
+            <button
+              className="absolute right-4 text-white/80 hover:text-white"
+              onClick={(e) => {
+                e.stopPropagation()
+                setSelectedImage((i) => (i + 1) % images.length)
+              }}
+              aria-label="Próxima imagem"
+            >
+              <ChevronRight className="w-9 h-9" />
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Barra de compra fixa no mobile */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t px-4 py-3 flex items-center gap-3 shadow-[0_-2px_10px_rgba(0,0,0,0.06)]">
+        <div className="flex-1 min-w-0">
+          <p className="text-lg font-bold text-primary leading-none">{formatPrice(product.price)}</p>
+          {installment && <p className="text-[11px] text-gray-500">2x de {installment} sem juros</p>}
+        </div>
+        <Button onClick={handleAddToCart} disabled={stock <= 0} className="bg-primary hover:bg-primary/90 text-white px-6">
+          <ShoppingBag className="w-4 h-4 mr-2" />
+          {stock <= 0 ? "Indisponível" : "Adicionar"}
+        </Button>
+      </div>
+    </>
   )
 }
