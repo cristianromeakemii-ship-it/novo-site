@@ -5,6 +5,8 @@ import { supabase } from "@/lib/supabase"
 import { formatPrice, cn } from "@/lib/utils"
 import type { Product, Category, Subcategory, StockItem } from "@/lib/supabase"
 import { Plus, Pencil, Trash2, Search, X } from "lucide-react"
+import { toast } from "sonner"
+import ImageCropModal from "@/components/admin/ImageCropModal"
 
 type ProductWithRelations = Product & {
   categories: Category | null
@@ -43,7 +45,7 @@ const emptyForm = {
   subcategory_id: "",
   is_featured: false,
   guide_size: "",
-  image_url: "",
+  images: [] as string[],
   stock_quantity: 0,
   stock_min_quantity: 1,
 }
@@ -59,10 +61,60 @@ export default function ProdutosPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const [pending, setPending] = useState<File[]>([])
+  const [uploading, setUploading] = useState(false)
+
+  const openNextCrop = (files: File[]) => {
+    if (files.length === 0) {
+      setCropSrc(null)
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => setCropSrc(reader.result as string)
+    reader.readAsDataURL(files[0])
+  }
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    e.target.value = ""
+    if (!files.length) return
+    setPending(files)
+    openNextCrop(files)
+  }
+
+  const uploadImage = async (blob: Blob): Promise<string | null> => {
+    const path = `produtos/${crypto.randomUUID()}.jpg`
+    const { error } = await supabase.storage
+      .from("products")
+      .upload(path, blob, { contentType: "image/jpeg", upsert: true })
+    if (error) {
+      toast.error("Erro ao enviar imagem: " + error.message)
+      return null
+    }
+    const { data } = supabase.storage.from("products").getPublicUrl(path)
+    return data.publicUrl
+  }
+
+  const handleCropConfirm = async (blob: Blob) => {
+    setUploading(true)
+    const url = await uploadImage(blob)
+    setUploading(false)
+    if (url) setForm((f) => ({ ...f, images: [...f.images, url] }))
+    const rest = pending.slice(1)
+    setPending(rest)
+    openNextCrop(rest)
+  }
+
+  const handleCropCancel = () => {
+    const rest = pending.slice(1)
+    setPending(rest)
+    openNextCrop(rest)
+  }
 
   const load = useCallback(async () => {
     const [p, c, sc] = await Promise.all([
-      supabase.from("products").select("*, categories(*), stock_items(*)").order("created_at", { ascending: false }),
+      supabase.from("products").select("*, categories(*), stock_items(*), product_images(*)").order("created_at", { ascending: false }),
       supabase.from("categories").select("*").order("name"),
       supabase.from("subcategories").select("*").order("name"),
     ])
@@ -101,7 +153,7 @@ export default function ProdutosPage() {
       subcategory_id: p.subcategory_id || "",
       is_featured: p.is_featured,
       guide_size: p.guide_size || "",
-      image_url: p.product_images?.[0]?.url || "",
+      images: (p.product_images || []).slice().sort((a, b) => a.sort_order - b.sort_order).map((img) => img.url),
       stock_quantity: stock?.quantity || 0,
       stock_min_quantity: stock?.min_quantity || 1,
     })
@@ -139,11 +191,13 @@ export default function ProdutosPage() {
         { onConflict: "product_id" }
       )
 
-      if (form.image_url) {
-        if (editingId) {
-          await supabase.from("product_images").delete().eq("product_id", productId)
-        }
-        await supabase.from("product_images").insert({ product_id: productId, url: form.image_url, sort_order: 0 })
+      if (editingId) {
+        await supabase.from("product_images").delete().eq("product_id", productId)
+      }
+      if (form.images.length > 0) {
+        await supabase.from("product_images").insert(
+          form.images.map((url, i) => ({ product_id: productId, url, sort_order: i }))
+        )
       }
     }
 
@@ -313,9 +367,38 @@ export default function ProdutosPage() {
                   {filteredSubcats.map((sc) => <option key={sc.id} value={sc.id}>{sc.name}</option>)}
                 </select>
               </div>
-              <div className="col-span-2 space-y-1">
-                <label className="text-sm font-medium">URL da Imagem</label>
-                <input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="w-full px-3 py-2 border rounded-md bg-background text-sm" placeholder="https://..." />
+              <div className="col-span-2 space-y-2">
+                <label className="text-sm font-medium">Fotos do produto</label>
+                <div className="flex flex-wrap gap-3">
+                  {form.images.map((url, i) => (
+                    <div key={url + i} className="relative w-20 h-20 rounded-md overflow-hidden border">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={url} alt="" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => setForm((f) => ({ ...f, images: f.images.filter((_, j) => j !== i) }))}
+                        className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full p-0.5"
+                        aria-label="Remover foto"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
+                  <label className="w-20 h-20 rounded-md border-2 border-dashed flex flex-col items-center justify-center gap-0.5 text-xs text-muted-foreground cursor-pointer hover:border-primary hover:text-primary">
+                    {uploading ? (
+                      "Enviando..."
+                    ) : (
+                      <>
+                        <Plus size={18} />
+                        <span>Fotos</span>
+                      </>
+                    )}
+                    <input type="file" accept="image/*" multiple className="hidden" onChange={onFileChange} disabled={uploading} />
+                  </label>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Tire fotos ou escolha da galeria do celular. Você pode cortar e aproximar antes de adicionar.
+                </p>
               </div>
               <div className="col-span-2 flex items-center gap-2">
                 <input type="checkbox" id="featured" checked={form.is_featured} onChange={(e) => setForm({ ...form, is_featured: e.target.checked })} className="rounded" />
@@ -331,6 +414,10 @@ export default function ProdutosPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {cropSrc && (
+        <ImageCropModal imageSrc={cropSrc} onCancel={handleCropCancel} onConfirm={handleCropConfirm} />
       )}
 
       {/* Delete Confirmation */}
