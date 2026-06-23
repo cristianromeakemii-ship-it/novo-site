@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 import { supabaseServer } from "@/lib/supabase-server"
 import { getDiscoveryNav } from "@/lib/queries"
+import { orixas } from "@/lib/orixas"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://artefiosdeluz.com.br"
 
@@ -11,6 +12,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: SITE_URL, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/sobre`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/contato`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${SITE_URL}/guia-dos-orixas`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
+    ...orixas.map((o) => ({
+      url: `${SITE_URL}/guia-dos-orixas/${o.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
   ]
 
   try {

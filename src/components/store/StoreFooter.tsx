@@ -50,6 +50,7 @@ export default function StoreFooter({ categories }: { categories: Category[] }) 
             <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wide">Institucional</h3>
             <ul className="space-y-2">
               <li><Link href="/sobre" className="text-sm hover:text-primary transition-colors">Quem Somos</Link></li>
+              <li><Link href="/guia-dos-orixas" className="text-sm hover:text-primary transition-colors">Guia dos Orixás</Link></li>
               <li><Link href="/contato" className="text-sm hover:text-primary transition-colors">Contato</Link></li>
               <li><Link href="/contato" className="text-sm hover:text-primary transition-colors">Trocas e Devoluções</Link></li>
               <li><Link href="/contato" className="text-sm hover:text-primary transition-colors">Prazo de Entrega</Link></li>
