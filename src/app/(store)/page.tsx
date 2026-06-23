@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { Sparkles, Hand, Truck, CreditCard, RotateCcw, Star, ArrowRight } from "lucide-react"
+import { Sparkles, Hand, Truck, CreditCard, RotateCcw, Star, ArrowRight, ChevronDown } from "lucide-react"
 import { getHomeData, getStoreSettings, getDiscoveryNav } from "@/lib/queries"
 import ProductCard from "@/components/store/ProductCard"
 import { Button } from "@/components/ui/button"
@@ -71,30 +71,40 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Navegue por Orixá / Entidade */}
+      {/* Navegue por Orixá / Entidade (dropdowns) */}
       {discovery.some((d) => d.subs.length > 0) && (
         <section className="py-12">
-          <div className="container mx-auto px-4 space-y-8">
-            {discovery.map(({ category, subs }) =>
-              subs.length > 0 ? (
-                <div key={category.id}>
-                  <h2 className="font-[var(--font-playfair)] text-2xl font-bold text-brown mb-4 text-center">
-                    {category.name}
-                  </h2>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {subs.map((s) => (
-                      <Link
-                        key={s.slug}
-                        href={`/categoria/${category.slug}?sub=${s.slug}`}
-                        className="px-4 py-1.5 rounded-full text-sm border border-primary/30 text-brown hover:bg-primary hover:text-white hover:border-primary transition-colors"
-                      >
-                        {s.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ) : null
-            )}
+          <div className="container mx-auto px-4 max-w-2xl">
+            <h2 className="font-[var(--font-playfair)] text-2xl font-bold text-brown mb-2 text-center">
+              Encontre pelo seu Orixá ou Entidade
+            </h2>
+            <p className="text-gray-500 text-sm text-center mb-6">Clique para ver as opções</p>
+            <div className="space-y-3">
+              {discovery.map(({ category, subs }) =>
+                subs.length > 0 ? (
+                  <details
+                    key={category.id}
+                    className="group border border-primary/20 rounded-xl bg-white overflow-hidden"
+                  >
+                    <summary className="flex items-center justify-between cursor-pointer px-5 py-3.5 font-medium text-brown list-none [&::-webkit-details-marker]:hidden">
+                      <span>{category.name}</span>
+                      <ChevronDown className="w-4 h-4 text-primary transition-transform group-open:rotate-180" />
+                    </summary>
+                    <div className="flex flex-wrap gap-2 px-5 pb-4 pt-1 border-t border-primary/10">
+                      {subs.map((s) => (
+                        <Link
+                          key={s.slug}
+                          href={`/categoria/${category.slug}?sub=${s.slug}`}
+                          className="px-3.5 py-1.5 rounded-full text-sm border border-primary/30 text-brown hover:bg-primary hover:text-white hover:border-primary transition-colors"
+                        >
+                          {s.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </details>
+                ) : null
+              )}
+            </div>
           </div>
         </section>
       )}
