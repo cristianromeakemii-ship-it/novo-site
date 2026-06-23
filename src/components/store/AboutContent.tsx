@@ -30,7 +30,7 @@ export default function AboutContent() {
           )}
         </div>
 
-        <div className="space-y-4 text-gray-600 leading-relaxed">
+        <div className="space-y-5 text-gray-700 text-[15px] sm:text-base leading-7">
           {settings.about_text ? (
             settings.about_text
               .split("\n")

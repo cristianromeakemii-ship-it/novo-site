@@ -49,9 +49,6 @@ export default function ProductCard({ product }: { product: Product }) {
 
       <div className="space-y-1">
         <h3 className="text-[13px] text-gray-700 line-clamp-2 leading-snug">{product.name}</h3>
-        {product.guide_size && (
-          <Badge variant="outline" className="text-[10px] text-primary border-primary">{product.guide_size}</Badge>
-        )}
         <p className="text-lg font-bold text-primary">{formatPrice(product.price)}</p>
         {installment && (
           <p className="text-[11px] text-gray-500">2x de {installment} sem juros</p>

@@ -9,9 +9,10 @@ import { useSettings } from "@/contexts/SettingsContext"
 import { formatPrice, cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
+
+const SIZES = ["60", "65", "70"]
 
 // Parte interativa da pagina de produto (galeria, quantidade, carrinho, frete).
 // A pagina em si e Server Component (SEO/metadata); aqui fica o que precisa do cliente.
@@ -25,6 +26,10 @@ export default function ProductDetails({ product }: { product: Product }) {
   const [shippingError, setShippingError] = useState("")
   const [customization, setCustomization] = useState("")
   const [lightboxOpen, setLightboxOpen] = useState(false)
+  const hasSize = !!product.guide_size
+  const [selectedSize, setSelectedSize] = useState(
+    product.guide_size && SIZES.includes(product.guide_size) ? product.guide_size : ""
+  )
 
   const images = product.product_images || []
   const currentImage = images[selectedImage]?.url
@@ -32,6 +37,15 @@ export default function ProductDetails({ product }: { product: Product }) {
   const installment = product.price >= 100 ? formatPrice(product.price / 2) : null
 
   const handleAddToCart = () => {
+    if (hasSize && !selectedSize) {
+      toast.error("Escolha o tamanho da guia.")
+      return
+    }
+    const parts: string[] = []
+    if (selectedSize) parts.push(`Tamanho: ${selectedSize} cm`)
+    if (customization.trim()) parts.push(customization.trim())
+    const fullCustomization = parts.length > 0 ? parts.join(" · ") : undefined
+
     addItem(
       {
         id: product.id,
@@ -40,12 +54,12 @@ export default function ProductDetails({ product }: { product: Product }) {
         price: product.price,
         image_url: currentImage || "",
         type: product.type,
-        customization: customization.trim() || undefined,
+        customization: fullCustomization,
       },
       quantity
     )
     toast.success("Produto adicionado ao carrinho", {
-      description: customization.trim() ? `${product.name} (personalizado)` : product.name,
+      description: fullCustomization ? `${product.name} — ${parts.join(" · ")}` : product.name,
     })
   }
 
@@ -137,10 +151,6 @@ export default function ProductDetails({ product }: { product: Product }) {
           </div>
         )}
 
-        {product.guide_size && (
-          <Badge variant="outline" className="text-primary border-primary mb-4">{product.guide_size}</Badge>
-        )}
-
         <p className="text-3xl font-bold text-primary mb-1">{formatPrice(product.price)}</p>
         {installment && <p className="text-sm text-gray-500 mb-4">2x de {installment} sem juros</p>}
 
@@ -155,6 +165,29 @@ export default function ProductDetails({ product }: { product: Product }) {
         {product.description && (
           <div className="text-sm text-gray-600 leading-relaxed mb-6 whitespace-pre-line">
             {product.description}
+          </div>
+        )}
+
+        {hasSize && (
+          <div className="mb-4">
+            <label className="text-sm font-medium text-brown mb-1.5 block">Tamanho da guia *</label>
+            <div className="flex gap-2">
+              {SIZES.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setSelectedSize(s)}
+                  className={cn(
+                    "px-4 py-2 rounded-md border text-sm font-medium transition-colors",
+                    selectedSize === s
+                      ? "border-primary bg-primary text-white"
+                      : "border-gray-300 text-gray-700 hover:border-primary"
+                  )}
+                >
+                  {s} cm
+                </button>
+              ))}
+            </div>
           </div>
         )}
 

@@ -155,9 +155,17 @@ export const getNavCategories = cache(
       .from("subcategories")
       .select("*")
       .eq("is_active", true)
-    return (cats as Category[]).map((c) => ({
-      ...c,
-      subcategories: ((subs as Subcategory[]) || []).filter((s) => s.category_id === c.id),
-    }))
+    // Ordem do menu: guias primeiro (orixas antes de entidades), depois o resto.
+    const ORDER = ["guias-de-orixas", "guias-de-entidades", "pulseiras", "tercos", "copos-e-tacas", "chapeus", "personalizados"]
+    const rank = (slug: string) => {
+      const i = ORDER.indexOf(slug)
+      return i === -1 ? 999 : i
+    }
+    return (cats as Category[])
+      .map((c) => ({
+        ...c,
+        subcategories: ((subs as Subcategory[]) || []).filter((s) => s.category_id === c.id),
+      }))
+      .sort((a, b) => rank(a.slug) - rank(b.slug))
   }
 )
