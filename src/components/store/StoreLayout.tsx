@@ -1,16 +1,25 @@
 "use client"
 
 import type { ReactNode } from "react"
+import type { Category, Subcategory } from "@/lib/supabase"
 import StoreHeader from "./StoreHeader"
 import StoreFooter from "./StoreFooter"
 import WhatsAppButton from "./WhatsAppButton"
 
-export default function StoreLayout({ children }: { children: ReactNode }) {
+type NavCategory = Category & { subcategories: Subcategory[] }
+
+export default function StoreLayout({
+  children,
+  navCategories,
+}: {
+  children: ReactNode
+  navCategories: NavCategory[]
+}) {
   return (
     <>
-      <StoreHeader />
+      <StoreHeader categories={navCategories} />
       <main className="flex-1">{children}</main>
-      <StoreFooter />
+      <StoreFooter categories={navCategories} />
       <WhatsAppButton />
     </>
   )

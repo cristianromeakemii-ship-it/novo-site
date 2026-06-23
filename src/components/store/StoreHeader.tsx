@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Search, User, ShoppingBag, Menu, X, Phone, ChevronDown } from "lucide-react"
@@ -8,41 +8,23 @@ import BrandMark from "@/components/BrandMark"
 import { useCart } from "@/contexts/CartContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { useSettings } from "@/contexts/SettingsContext"
-import { supabase, type Category, type Subcategory } from "@/lib/supabase"
+import type { Category, Subcategory } from "@/lib/supabase"
 import { cn } from "@/lib/utils"
 
-export default function StoreHeader() {
+export default function StoreHeader({
+  categories,
+}: {
+  categories: (Category & { subcategories?: Subcategory[] })[]
+}) {
   const { itemCount } = useCart()
   const { user } = useAuth()
   const { settings } = useSettings()
   const router = useRouter()
-  const [categories, setCategories] = useState<(Category & { subcategories?: Subcategory[] })[]>([])
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [expandedCat, setExpandedCat] = useState<string | null>(null)
   const [hoveredCat, setHoveredCat] = useState<string | null>(null)
-
-  useEffect(() => {
-    async function load() {
-      const { data: cats } = await supabase
-        .from("categories")
-        .select("*")
-        .eq("is_active", true)
-        .order("name")
-      if (!cats) return
-      const { data: subs } = await supabase
-        .from("subcategories")
-        .select("*")
-        .eq("is_active", true)
-      const mapped = cats.map((c: Category) => ({
-        ...c,
-        subcategories: (subs || []).filter((s: Subcategory) => s.category_id === c.id),
-      }))
-      setCategories(mapped)
-    }
-    load()
-  }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()

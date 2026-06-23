@@ -3,22 +3,11 @@
 import Link from "next/link"
 import { AtSign, Globe, MessageCircle } from "lucide-react"
 import { useSettings } from "@/contexts/SettingsContext"
-import { useEffect, useState } from "react"
-import { supabase, type Category } from "@/lib/supabase"
+import type { Category } from "@/lib/supabase"
 import BrandMark from "@/components/BrandMark"
 
-export default function StoreFooter() {
+export default function StoreFooter({ categories }: { categories: Category[] }) {
   const { settings } = useSettings()
-  const [categories, setCategories] = useState<Category[]>([])
-
-  useEffect(() => {
-    supabase
-      .from("categories")
-      .select("*")
-      .eq("is_active", true)
-      .order("name")
-      .then(({ data }) => { if (data) setCategories(data) })
-  }, [])
 
   const whatsappLink = `https://wa.me/${settings.whatsapp_number || settings.whatsapp}`
 

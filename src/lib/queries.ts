@@ -140,3 +140,24 @@ export const getProductReviews = cache(async (productId: string): Promise<Review
     .order("created_at", { ascending: false })
   return (data as Review[]) ?? []
 })
+
+// Categorias + subcategorias para o menu (header/footer), buscadas no servidor
+// para que os links entrem no HTML inicial (melhor rastreamento/SEO).
+export const getNavCategories = cache(
+  async (): Promise<(Category & { subcategories: Subcategory[] })[]> => {
+    const { data: cats } = await supabaseServer
+      .from("categories")
+      .select("*")
+      .eq("is_active", true)
+      .order("name")
+    if (!cats) return []
+    const { data: subs } = await supabaseServer
+      .from("subcategories")
+      .select("*")
+      .eq("is_active", true)
+    return (cats as Category[]).map((c) => ({
+      ...c,
+      subcategories: ((subs as Subcategory[]) || []).filter((s) => s.category_id === c.id),
+    }))
+  }
+)
