@@ -29,7 +29,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         }}
       >
         <div style={{ display: "flex", color: "#D4A843", fontSize: 34, letterSpacing: 2 }}>
-          ✦ ARTE FIOS DE LUZ
+          ARTE FIOS DE LUZ
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ display: "flex", color: "#ffffff", fontSize: 68, fontWeight: 700, lineHeight: 1.1 }}>

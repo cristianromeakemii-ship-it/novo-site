@@ -77,6 +77,10 @@ export default function CheckoutPage() {
       setError("Preencha o endereço completo para produtos físicos.")
       return
     }
+    if (hasPhysical && !selectedShipping) {
+      setError("Calcule o frete pelo CEP e selecione um método de envio.")
+      return
+    }
     setSubmitting(true)
     setError("")
 

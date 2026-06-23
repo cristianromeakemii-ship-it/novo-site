@@ -67,6 +67,40 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${playfair.variable} ${openSans.variable} h-full`}>
       <body className="min-h-full flex flex-col antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Arte Fios de Luz",
+              url: SITE_URL,
+              logo: `${SITE_URL}/icon.svg`,
+              description:
+                "Artigos religiosos artesanais e personalizados para Umbanda, Candomblé e espiritualidade.",
+              sameAs: ["https://instagram.com/artefiosdeluz"],
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Arte Fios de Luz",
+              url: SITE_URL,
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate: `${SITE_URL}/buscar?q={search_term_string}`,
+                },
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
         <AuthProvider>
           <SettingsProvider>
             <CartProvider>

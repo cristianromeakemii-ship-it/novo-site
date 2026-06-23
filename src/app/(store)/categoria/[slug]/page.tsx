@@ -30,7 +30,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     if (activeSub) {
       title = `${activeSub.name} — ${category.name}`
       canonicalPath = `/categoria/${category.slug}?sub=${activeSub.slug}`
-      baseDesc = `${activeSub.name}: ${category.name} artesanais e personalizadas da Arte Fios de Luz. Fé, proteção e significado em cada peça.`
+      baseDesc =
+        activeSub.description ||
+        `${activeSub.name}: ${category.name} artesanais e personalizadas da Arte Fios de Luz. Fé, proteção e significado em cada peça.`
     }
   }
 
@@ -68,11 +70,17 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         {activeSub ? activeSub.name : category.name}
       </h1>
       {activeSub ? (
-        <p className="text-gray-600 mb-6">
-          {activeSub.name} — {category.name}
-        </p>
+        activeSub.description ? (
+          <p className="text-gray-600 mb-6 max-w-3xl whitespace-pre-line">{activeSub.description}</p>
+        ) : (
+          <p className="text-gray-600 mb-6">
+            {activeSub.name} — {category.name}
+          </p>
+        )
       ) : (
-        category.description && <p className="text-gray-600 mb-6">{category.description}</p>
+        category.description && (
+          <p className="text-gray-600 mb-6 max-w-3xl whitespace-pre-line">{category.description}</p>
+        )
       )}
 
       {/* Subcategory pills (navegacao por URL) */}

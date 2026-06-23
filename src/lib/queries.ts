@@ -11,6 +11,7 @@ export const getProductBySlug = cache(async (slug: string): Promise<Product | nu
     .from("products")
     .select(PRODUCT_SELECT)
     .eq("slug", slug)
+    .eq("status", "ATIVO")
     .single()
   if (data?.product_images) {
     data.product_images.sort(
