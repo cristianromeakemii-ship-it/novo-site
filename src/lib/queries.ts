@@ -118,3 +118,24 @@ export const getDiscoveryNav = cache(
     }))
   }
 )
+
+export type Review = {
+  id: string
+  product_id: string
+  customer_name: string
+  rating: number
+  comment: string | null
+  is_approved: boolean
+  created_at: string
+}
+
+export const getProductReviews = cache(async (productId: string): Promise<Review[]> => {
+  // Se a tabela reviews ainda nao existir, retorna [] (graceful).
+  const { data } = await supabaseServer
+    .from("reviews")
+    .select("*")
+    .eq("product_id", productId)
+    .eq("is_approved", true)
+    .order("created_at", { ascending: false })
+  return (data as Review[]) ?? []
+})

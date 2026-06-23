@@ -2,8 +2,9 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ChevronRight } from "lucide-react"
-import { getProductBySlug, getRelatedProducts } from "@/lib/queries"
+import { getProductBySlug, getRelatedProducts, getProductReviews } from "@/lib/queries"
 import ProductDetails from "@/components/store/ProductDetails"
+import ProductReviews from "@/components/store/ProductReviews"
 import ProductCard from "@/components/store/ProductCard"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://artefiosdeluz.com.br"
@@ -43,6 +44,9 @@ export default async function ProductPage({ params }: Props) {
   const related = product.category_id
     ? await getRelatedProducts(product.category_id, product.id)
     : []
+  const reviews = await getProductReviews(product.id)
+  const reviewCount = reviews.length
+  const avgRating = reviewCount > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviewCount : 0
   const stock = product.stock_items?.[0]?.quantity ?? 0
   const images = (product.product_images || []).map((img) => img.url)
 
@@ -54,6 +58,15 @@ export default async function ProductPage({ params }: Props) {
     description: product.description || undefined,
     sku: product.id,
     brand: { "@type": "Brand", name: "Arte Fios de Luz" },
+    ...(reviewCount > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: avgRating.toFixed(1),
+            reviewCount,
+          },
+        }
+      : {}),
     offers: {
       "@type": "Offer",
       priceCurrency: "BRL",
@@ -108,6 +121,8 @@ export default async function ProductPage({ params }: Props) {
       </nav>
 
       <ProductDetails product={product} />
+
+      <ProductReviews productId={product.id} initialReviews={reviews} />
 
       {related.length > 0 && (
         <section className="mt-16">
