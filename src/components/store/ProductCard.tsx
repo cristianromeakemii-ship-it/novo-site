@@ -12,7 +12,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const { settings } = useSettings()
 
   const imageUrl = product.product_images?.[0]?.url
-  const freeShipping = product.price >= (settings.free_shipping_above || 199)
+  const freeShipping = product.price >= (settings.free_shipping_above ?? 200)
   const installment = product.price >= 100 ? formatPrice(product.price / 2) : null
 
   return (

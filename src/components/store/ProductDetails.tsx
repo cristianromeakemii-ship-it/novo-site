@@ -176,8 +176,9 @@ export default function ProductDetails({ product }: { product: Product }) {
 
         {/* Personalizacao sob encomenda (campo livre) */}
         <div className="mb-4">
-          <label className="text-sm font-medium text-brown mb-1.5 block">Personalização (opcional)</label>
+          <label htmlFor="personalizacao" className="text-sm font-medium text-brown mb-1.5 block">Personalização (opcional)</label>
           <Textarea
+            id="personalizacao"
             value={customization}
             onChange={(e) => setCustomization(e.target.value)}
             placeholder="Quer algo sob medida? Conte aqui: cores, tamanho, orixá/entidade, nº de contas/fios, pingente…"

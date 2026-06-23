@@ -63,7 +63,7 @@ export default function CheckoutPage() {
   }
 
   const shippingCost = selectedShipping?.price || 0
-  const freeShipping = total >= (settings.free_shipping_above || 199)
+  const freeShipping = total >= (settings.free_shipping_above ?? 200)
   const finalShipping = freeShipping ? 0 : shippingCost
   const finalTotal = total + finalShipping
 

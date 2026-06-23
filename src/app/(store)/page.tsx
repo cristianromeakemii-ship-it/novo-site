@@ -32,6 +32,7 @@ export default async function HomePage() {
       ? settings.hero_cta_link
       : "/categoria/guias-de-orixas"
   const instagramUrl = settings?.instagram_url || "https://instagram.com/artefiosdeluz"
+  const freeShippingAbove = settings?.free_shipping_above ?? 200
 
   return (
     <div>
@@ -59,7 +60,7 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { icon: Hand, text: "Feito à Mão" },
-            { icon: Truck, text: "Frete Grátis acima de R$ 199" },
+            { icon: Truck, text: `Frete Grátis acima de R$ ${freeShippingAbove}` },
             { icon: CreditCard, text: "Pix e Cartão" },
             { icon: RotateCcw, text: "Troca até 30 dias" },
           ].map(({ icon: Icon, text }) => (

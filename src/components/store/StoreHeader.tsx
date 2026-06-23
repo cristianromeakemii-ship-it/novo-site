@@ -128,9 +128,18 @@ export default function StoreHeader({
                 className="relative"
                 onMouseEnter={() => setHoveredCat(cat.id)}
                 onMouseLeave={() => setHoveredCat(null)}
+                onFocus={() => setHoveredCat(cat.id)}
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget as Node)) setHoveredCat(null)
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") setHoveredCat(null)
+                }}
               >
                 <Link
                   href={`/categoria/${cat.slug}`}
+                  aria-haspopup={cat.subcategories && cat.subcategories.length > 0 ? true : undefined}
+                  aria-expanded={hoveredCat === cat.id}
                   className="uppercase tracking-wide text-gray-700 hover:text-primary border-b-2 border-transparent hover:border-primary pb-3 pt-3 inline-block transition-colors"
                 >
                   {cat.name}
@@ -156,7 +165,7 @@ export default function StoreHeader({
 
       {/* Mobile nav */}
       {mobileOpen && (
-        <div className="lg:hidden fixed inset-0 top-[64px] bg-white z-40 overflow-y-auto">
+        <div className="lg:hidden border-t bg-white max-h-[calc(100vh-4rem)] overflow-y-auto">
           <nav className="p-4">
             {categories.map((cat) => (
               <div key={cat.id} className="border-b">
